@@ -13,6 +13,7 @@ require_once "init.php";
 // Define variables and initialize with empty values
 $username = $password = "";
 $score = 0;
+$id = 0;
 $username_error = $password_error = "";
  
 // Processing form data when form is submitted
