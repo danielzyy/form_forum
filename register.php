@@ -10,18 +10,6 @@ $username_error = "";
 $password_error = "";
 $confirm_password_error = "";
 
-$postQuery = $db->prepare("
-    SELECT id, username, password, score, date
-    FROM users
-    WHERE username = :username
-");
-
-$postQuery->execute([
-    'username' => $username
-]);
-
-$posts = $postQuery->rowCount() ? $postQuery : [];
-
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 if(empty(trim($_POST['username']))){

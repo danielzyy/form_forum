@@ -34,13 +34,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
     // Validate credentials
     if(empty($username_error) && empty($password_error)){
-        foreach ($db->query("SELECT username, password, score FROM users") as $row) {
+        foreach ($db->query("SELECT id, username, password, score FROM users") as $row) {
             if($row['username']==$username && $row['password']==$password) {
                 session_start();
                 // Store data in session variables
                 $_SESSION["loggedin"] = true;
                 $_SESSION["score"] = $score;
                 $_SESSION["username"] = $username;
+                $_SESSION["id"] = $id;
                 header("location: main.php");
             }
         }

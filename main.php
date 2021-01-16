@@ -1,12 +1,39 @@
 <?php
 // Initialize the session
 session_start();
- 
+
+require_once "init.php";
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
+$username = $_SESSION["id"];
+//prepare all posts
+$postQuery = $db->prepare("
+  SELECT id, user_id, title, video, score, date
+  FROM videos
+");
+
+$postQuery->execute([
+    
+]);
+
+$posts = $postQuery->rowCount() ? $postQuery : [];
+
+// To get User-specific posts
+$userQuery = $db->prepare("
+    SELECT id, user_id, title, video, score, date
+    FROM videos
+    WHERE user_id = :username
+");
+
+$userQuery->execute([
+    'username' => $username
+]);
+
+$users = $userQuery->rowCount() ? $userQuery : [];
+
 ?>
  
 <!DOCTYPE html>
@@ -64,19 +91,19 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         <h1 class="my-4">Welcome to Form Forum!
         </h1>
 
-        
-        <!-- Blog Post -->
-        <div class="card mb-4">
-          <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-          <div class="card-body">
-            <h2 class="card-title">Post Title</h2>
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!</p>
-            <a href="#" class="btn btn-primary">Read More &rarr;</a>
+        <?php foreach($posts as $post): ?>
+          <!-- Blog Post -->
+          <div class="card mb-4">
+            <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+            <div class="card-body">
+              <h2 class="card-title"><?php echo $item['title']; ?></h2>
+              <a href="#" class="btn btn-primary">Read More &rarr;</a>
+            </div>
+            <div class="card-footer text-muted">
+              Posted on <?php echo $item['date']; ?> by <?php echo $item['user_id']; ?>
+            </div>
           </div>
-          <div class="card-footer text-muted">
-            Posted on January 1, 2020 by
-          </div>
-        </div>
+        <?php endforeach; ?>
 
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">
@@ -112,7 +139,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
           <div class="card-body">
             <img class="card-img-top" src="http://placehold.it/180x180" alt="Card image cap" 
             style="padding-bottom: 20px; border-radius:50%;">
-            <h1><?php echo htmlspecialchars($_SESSION["username"]); ?></h1>
+            <h1><?php htmlspecialchars($_SESSION["id"]); ?></h1>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Post</button>
           </div>
         </div>
