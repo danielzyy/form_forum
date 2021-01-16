@@ -8,10 +8,10 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
-$username = $_SESSION["id"];
+$username = $_SESSION["username"];
 //prepare all posts
 $postQuery = $db->prepare("
-  SELECT id, user_id, title, video, score, date
+  SELECT id, username, title, video, score, date
   FROM videos
 ");
 
@@ -23,9 +23,9 @@ $posts = $postQuery->rowCount() ? $postQuery : [];
 
 // To get User-specific posts
 $userQuery = $db->prepare("
-    SELECT id, user_id, title, video, score, date
+    SELECT id, username, title, video, score, date
     FROM videos
-    WHERE user_id = :username
+    WHERE username = :username
 ");
 
 $userQuery->execute([
@@ -96,11 +96,13 @@ $users = $userQuery->rowCount() ? $userQuery : [];
           <div class="card mb-4">
             <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
             <div class="card-body">
-              <h2 class="card-title"><?php echo $item['title']; ?></h2>
-              <a href="#" class="btn btn-primary">Read More &rarr;</a>
+              <h2 class="card-title"><?php echo $post['title']; ?></h2>
+              <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+              <a href="#" class="btn btn-primary">+1</a>
+              <a href="#" class="btn btn-primary">-1</a>
             </div>
             <div class="card-footer text-muted">
-              Posted on <?php echo $item['date']; ?> by <?php echo $item['user_id']; ?>
+              Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
             </div>
           </div>
         <?php endforeach; ?>
