@@ -91,7 +91,6 @@ if(isset($_POST['vid_upload'])){
 	$_SESSION['message']="Please select a file.";
 }
 	
-header("location: getvideo.php");
 exit;
 }
 
