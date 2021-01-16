@@ -1,6 +1,4 @@
 <?php
-
-
 try{
     $db = new PDO('pgsql:host=free-tier.gcp-us-central1.cockroachlabs.cloud;port=26257;dbname=yellow-camel-256.defaultdb;sslmode=require;sslrootcert=cc-ca.crt',
     'user', 'userpassword', array(
