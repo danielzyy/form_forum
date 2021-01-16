@@ -1,6 +1,7 @@
 <?php
-// Include configuration file
-require_once "configuration.php";
+session_start();
+
+require_once "init.php";
 
 $username = '';
 $password = ''; 
@@ -9,33 +10,42 @@ $username_error = "";
 $password_error = "";
 $confirm_password_error = "";
 
+$postQuery = $db->prepare("
+    SELECT id, username, password, score, date
+    FROM users
+    WHERE username = :username
+");
+
+$postQuery->execute([
+    'username' => $username
+]);
+
+$posts = $postQuery->rowCount() ? $postQuery : [];
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 if(empty(trim($_POST['username']))){
     $username_error = "You did not enter a username. Please try again.";
 }
 else{
-    $sql = "SELECT id FROM users WHERE username = ?";
-
     $test_username = trim($_POST['username']);
-    
-
-    foreach ($db->query("SELECT * FROM users") as $row){
-        if ($test_username == $row["username"]){
+    foreach ($db->query("SELECT username FROM users") as $row){
+        // print $row['username'] . "\r\n";
+        if ($test_username == $row['username']){
             $username_error = "This username is already taken.";
         }
 
     }
 
-    if (!(empty($username_error))){
-        $username = trim($_POST['username']);
+    if (empty($username_error)) {
+        $username = trim($_POST["username"]);
     }
 }
     // Validate Password
     if(empty(trim($_POST['password']))){
         $password_error = "Please enter a password.";     
     } elseif(strlen(trim($_POST['password'])) < 6){
-        $password_error = "Password must have atleast 6 characters.";
+        $password_error = "Password must have at least 6 characters.";
     } else{
         $password = trim($_POST['password']);
     }
@@ -53,22 +63,20 @@ else{
         }
     }
     
-    if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
+    if(!empty(trim($_POST['password'])) && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err)){
 
        // Prepare an insert statement
        $insert_statement = $db->prepare("
-        INSERT INTO users(username, password, date) 
-        VALUES (:username, :password, NOW())
+        INSERT INTO users(username, password, date, score) 
+        VALUES (:username, :password, NOW(), 0)
         ");
 
         $insert_statement->execute([
             'username' => $username,
             'password' => $password
         ]);
-    }
-
-         
-    }
+    } 
+}
 ?>
 
 <!DOCTYPE html>
@@ -76,18 +84,18 @@ else{
 <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
     <style type="text/css">
         body{ font: 14px sans-serif; }
         .wrapper{ width: 350px; padding: 20px; }
     </style>
 </head>
 <body>
-    <div class="wrapper">
+    <div class="wrapper mx-auto">
         <h2>Sign Up</h2>
         <p>Please fill out the following to create an account.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="form-group <?php echo (!empty($username_err)) ? 'has-error' : ''; ?>">
+            <div class="form-group <?php echo (!empty($username_error)) ? 'has-error' : ''; ?>">
                 <label>Username</label>
                 <input type="text" name="username" class="form-control" value="<?php echo $username; ?>">
                 <span class="help-block"><?php echo $username_error; ?></span>
@@ -111,27 +119,4 @@ else{
     </div>    
 </body>
 </html>
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-}
-
 
