@@ -237,10 +237,12 @@ exit;
             </div>
             <div class="modal-body">
                 <div class="container">
-          <form [formGroup]="addPostForm">
+          <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
             <div class="form-group">
-              <label class="post-title">Title</label>
-              <input type="text" [formControlName]="'title'" class="form-control" placeholder="Title">
+				<input type='file' name='file' />
+				<input type='submit' value='Upload' name='vid_upload'>
+				<label class="post-title">Title</label>
+				<input type="text" [formControlName]="'title'" class="form-control" placeholder="Title">
             </div>
             <div class="form-group">
               <a href="main.php" class="btn btn-primary" data-dismiss="modal">Submit</a>
@@ -280,10 +282,7 @@ exit;
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-<form method="post" action="" enctype='multipart/form-data'>
-      <input type='file' name='file' />
-      <input type='submit' value='Upload' name='vid_upload'>
-    </form>
+
 </body>
 
 </html>
