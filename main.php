@@ -35,31 +35,6 @@ $userQuery->execute([
 
 $users = $userQuery->rowCount() ? $userQuery : [];
 
-//To search for post
-
-
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-  if (!empty(trim($_POST['search']))){
-    $search = $_POST['search'];
-    print "hellfl";
-    // header("location: login.php");
-    $searchQuery = $db->prepare("
-      SELECT *
-      FROM videos
-      WHERE title = :search
-    ");
-
-    $searchQuery->execute([
-        'search' => $search
-    ]);
-
-    $posts = $searchQuery->rowCount() ? $searchQuery : [];
-  }
-  
-}
-test(){
-  $search = $_POST['search']
-}
 ?>
  
 <!DOCTYPE html>
@@ -106,6 +81,8 @@ test(){
       </div>
     </div>
   </nav>
+
+  
 
   
   <div class="container">
@@ -175,14 +152,42 @@ test(){
         <div class="card my-4">
           <h5 class="card-header">Search</h5>
           <div class="card-body">
-            <div class="input-group">
-              <input type="text" name="search" class="form-control" placeholder="Search for...">
-              <div class="input-group-append">
-              <button type="submit" onClick="test()" class="btn btn-secondary" value="Go!">
-              </div>
-            </div>
+          <form method ="post">      
+              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for...">
+              <input type="submit" name="submit" class="btn btn-secondary" value="Go!">
+            </form>
           </div>
         </div>
+
+        <!-- Php code to search -->
+        <?php
+        if (isset($_POST["submit"])){
+        $entry = $_POST["search"];
+        $search = $db->prepare("SELECT * FROM videos WHERE title = '$entry'");
+
+        $search->setFetchMode(PDO:: FETCH_OBJ);
+        $search-> execute();
+
+        if($row = $search->fetch()){
+             foreach($posts as $post): 
+                echo "
+                <div class=\"card mb-4\">
+                  <img class=\"card-img-top\" src=\"http://placehold.it/750x300\" alt=\"Card image cap\">
+                  <div class=\"card-body\">
+                    <h2 class=\"card-title\">"<?php echo $post['title']; ?></h2>
+                    <p class=\"card-title\">Form Rating: <?php echo $post['score']; ?></p>
+                    <a href=\"#\" class=\"btn btn-primary\">+1</a>
+                    <a href=\"#\" class=\"btn btn-primary\">-1</a>
+                  </div>
+                  <div class=\"card-footer text-muted\">
+                    Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                  </div>
+                </div>
+                ";
+             endforeach; 
+        }
+        }
+        ?>
 
         <!-- Side Widget -->
         <div class="card my-4">
