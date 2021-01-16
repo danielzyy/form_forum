@@ -14,6 +14,7 @@ $username = $_SESSION["username"];
 $postQuery = $db->prepare("
   SELECT id, username, title, video, score, date
   FROM videos
+  ORDER BY id DESC
 ");
 
 $postQuery->execute([
@@ -73,12 +74,10 @@ if(isset($_POST['vid_upload'])){
 				$_SESSION['message']= "File is larger than 250 mb.";
 		}else{
 			if(move_uploaded_file($_FILES['file']['tmp_name'],$target_file)){
-				$query=$db->prepare("INSERT INTO videos(username,title,video,score,date) VALUES('".$name."','".$target_file."')");
+				$query=$db->prepare("INSERT INTO videos(username,title,video,score, date) VALUES('".$name."','".$target_file."','".$target_file."',0,NOW())");
 				
 				$query->execute([
-				'username' => $username,
-				'title'=>$title,
-				'video'=>$video,
+				'username' => $username
 				]);
 				$_SESSION['message']="Uploaded Successfully.";
 			}
@@ -90,9 +89,27 @@ if(isset($_POST['vid_upload'])){
 }else{
 	$_SESSION['message']="Please select a file.";
 }
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> d772f80ea5dd19ca14abede9a5cba69e9de4a325
 exit;
 }
+
+
+
+//$fetchVideos=mysqli_query($connection, "SELECT * FROM videos ORDER BY id DESC");
+//while($row=mysqli_fetch_assoc($fetchVideos)){
+	//$location=$row['location'];
+	//$name=$row['name'];
+// 	echo "<div style='float:left; margin-right:5px;'>
+// 		<video src='".$location."' controls width='320px' height='320px'></video>
+// 		<br>
+// 		<span>".$name."</span>
+// 	</div>";
+// }
+
 
 
 ?>
@@ -152,11 +169,11 @@ exit;
         <h1 class="my-4">Welcome to Form Forum!
         </h1>
 
-        <?php if (empty($search)): ?>
+        
           <?php foreach($posts as $post): ?>
             <!-- Blog Post -->
             <div class="card mb-4">
-              <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+            <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
@@ -168,24 +185,7 @@ exit;
               </div>
             </div>
           <?php endforeach; ?>
-          <?php else: ?>
-            <?php foreach($searchs as $search): ?>
-            <!-- Blog Post -->
-            <div class="card mb-4">
-              <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-              <div class="card-body">
-                <h2 class="card-title"><?php echo $search['title']; ?></h2>
-                <p class="card-title">Form Rating: <?php echo $search['score']; ?></p>
-                <a href="#" class="btn btn-primary">+1</a>
-                <a href="#" class="btn btn-primary">-1</a>
-              </div>
-              <div class="card-footer text-muted">
-                Posted on <?php echo substr($search['date'],0,10); ?> by <?php echo $search['username']; ?>
-              </div>
-            </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-
+          
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">
           <li class="page-item">
@@ -222,7 +222,11 @@ exit;
         $search-> execute();
 
         if($row = $search->fetch()){
+<<<<<<< HEAD
             
+=======
+        
+>>>>>>> d772f80ea5dd19ca14abede9a5cba69e9de4a325
         }
         }
         ?>
