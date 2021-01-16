@@ -127,9 +127,9 @@ $users = $userQuery->rowCount() ? $userQuery : [];
           <h5 class="card-header">Search</h5>
           <div class="card-body">
             <div class="input-group">
-              <input type="text" class="form-control" [formControlName]="'search'" placeholder="Search for...">
+              <input type="text" class="form-control" name="search" placeholder="Search for...">
               <span class="input-group-append">
-                <button class="btn btn-secondary" [formControlName]="'submit'" type="button">Go!</button>
+                <a class="btn btn-secondary" href="search.php?" name="submit" type="button">Go!</a>
               </span>
             </div>
           </div>
@@ -203,18 +203,5 @@ $users = $userQuery->rowCount() ? $userQuery : [];
 </body>
 </html>
 
-<?php
-if (isset($_POST["submit"])){
-  $entry = $_POST["search"];
-  $search = $db->prepare("SELECT * FROM 'vidoes' WHERE title = '$entry'");
-
-  $entry->setFetchMode(PDO:: FETCH_OBJ);
-  $entry-> execute();
-
-  if($row = $search->fetch()){
-    echo "Search Works";
-  }
-}
-?>
 
 
