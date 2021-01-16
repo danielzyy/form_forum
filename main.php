@@ -55,6 +55,47 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   }
   
 }
+
+
+if(isset($_POST['vid_upload'])){
+	$maxsize=262144000;//250 mb
+	if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != ''){
+		$name = $_FILES['file']['name'];
+		$target_dir = "videos/";
+		$target_file = $target_dir . $_FILES["file"]["name"];
+		
+		$extension=strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+		$extensions_arr=array("mp4","avi","flv","wmv","mov", "mpeg");
+		
+		if(in_array($extension,$extensions_arr)){
+			
+			if(($_FILES['file']['size']>=$maxsize) || ($_FILES["file"]["size"]==0)){
+				$_SESSION['message']= "File is larger than 250 mb.";
+		}else{
+			if(move_uploaded_file($_FILES['file']['tmp_name'],$target_file)){
+				$query=$db->prepare("INSERT INTO videos(username,title,video,score,date) VALUES('".$name."','".$target_file."')");
+				
+				$query->execute([
+				'username' => $username,
+				'title'=>$title,
+				'video'=>$video,
+				]);
+				$_SESSION['message']="Uploaded Successfully.";
+			}
+		}
+	
+	}else{
+		$_SESSION['message']="Invalid file extension.";
+	}
+}else{
+	$_SESSION['message']="Please select a file.";
+}
+	
+header("location: getvideo.php");
+exit;
+}
+
+
 ?>
  
 <!DOCTYPE html>
@@ -239,7 +280,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-
+<form method="post" action="" enctype='multipart/form-data'>
+      <input type='file' name='file' />
+      <input type='submit' value='Upload' name='vid_upload'>
+    </form>
 </body>
 
 </html>
