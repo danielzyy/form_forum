@@ -35,6 +35,67 @@ $userQuery->execute([
 
 $users = $userQuery->rowCount() ? $userQuery : [];
 
+//To search for post
+$searchQuery = $db->prepare("
+      SELECT *
+      FROM videos
+      WHERE title = :search
+  ");
+
+  $searchQuery->execute([
+      'search' => $search
+  ]);
+
+  $searchs = $searchQuery->rowCount() ? $searchQuery : [];
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+  if (!empty($_POST["search"])){
+    $search = $_POST["search"];
+    print "hellfl";
+    header("location: login.php");
+  }
+  
+}
+
+
+if(isset($_POST['vid_upload'])){
+	$maxsize=262144000;//250 mb
+	if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != ''){
+		$name = $_FILES['file']['name'];
+		$target_dir = "videos/";
+		$target_file = $target_dir . $_FILES["file"]["name"];
+		
+		$extension=strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+		$extensions_arr=array("mp4","avi","flv","wmv","mov", "mpeg");
+		
+		if(in_array($extension,$extensions_arr)){
+			
+			if(($_FILES['file']['size']>=$maxsize) || ($_FILES["file"]["size"]==0)){
+				$_SESSION['message']= "File is larger than 250 mb.";
+		}else{
+			if(move_uploaded_file($_FILES['file']['tmp_name'],$target_file)){
+				$query=$db->prepare("INSERT INTO videos(username,title,video,score,date) VALUES('".$name."','".$target_file."')");
+				
+				$query->execute([
+				'username' => $username,
+				'title'=>$title,
+				'video'=>$video,
+				]);
+				$_SESSION['message']="Uploaded Successfully.";
+			}
+		}
+	
+	}else{
+		$_SESSION['message']="Invalid file extension.";
+	}
+}else{
+	$_SESSION['message']="Please select a file.";
+}
+	
+header("location: getvideo.php");
+exit;
+}
+
+
 ?>
  
 <!DOCTYPE html>
@@ -188,10 +249,12 @@ $users = $userQuery->rowCount() ? $userQuery : [];
             </div>
             <div class="modal-body">
                 <div class="container">
-          <form [formGroup]="addPostForm">
+          <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
             <div class="form-group">
-              <label class="post-title">Title</label>
-              <input type="text" [formControlName]="'title'" class="form-control" placeholder="Title">
+				<input type='file' name='file' />
+				<input type='submit' value='Upload' name='vid_upload'>
+				<label class="post-title">Title</label>
+				<input type="text" [formControlName]="'title'" class="form-control" placeholder="Title">
             </div>
             <div class="form-group">
               <a href="main.php" class="btn btn-primary" data-dismiss="modal">Submit</a>
