@@ -139,7 +139,7 @@ $users = $userQuery->rowCount() ? $userQuery : [];
           <div class="card-body">
             <img class="card-img-top" src="http://placehold.it/180x180" alt="Card image cap" 
             style="padding-bottom: 20px; border-radius:50%;">
-            <h1><?php htmlspecialchars($_SESSION["id"]); ?></h1>
+            <h1><?php echo $_SESSION["username"] ?></h1>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Post</button>
           </div>
         </div>
