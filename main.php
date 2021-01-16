@@ -19,6 +19,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         body{ font: 14px sans-serif; text-align: center; }
     </style>
 </head>
+
 <body>
     <div class="page-header">
         <h1>Hi, <?php echo htmlspecialchars($_SESSION["username"]); ?>! Welcome Form Forum, the front page of fitness.</h1>
