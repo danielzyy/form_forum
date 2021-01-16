@@ -144,6 +144,8 @@ exit;
   </nav>
 
   
+
+  
   <div class="container">
 
     <div class="row">
@@ -206,15 +208,42 @@ exit;
         <div class="card my-4">
           <h5 class="card-header">Search</h5>
           <div class="card-body">
-            <div class="form-group">
-              <input type="text" name="search" class="form-control" placeholder="Search for...">
-            </div>
-            <div class="form-group">
-              <input type="submit" class="btn btn-secondary" value="Go!">
-            </div>
-
+          <form method ="post">      
+              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for...">
+              <input type="submit" name="submit" class="btn btn-secondary" value="Go!">
+            </form>
           </div>
         </div>
+
+        <!-- Php code to search -->
+        <?php
+        if (isset($_POST["submit"])){
+        $entry = $_POST["search"];
+        $search = $db->prepare("SELECT * FROM videos WHERE title = '$entry'");
+
+        $search->setFetchMode(PDO:: FETCH_OBJ);
+        $search-> execute();
+
+        if($row = $search->fetch()){
+             foreach($posts as $post): 
+                echo "
+                <div class=\"card mb-4\">
+                  <img class=\"card-img-top\" src=\"http://placehold.it/750x300\" alt=\"Card image cap\">
+                  <div class=\"card-body\">
+                    <h2 class=\"card-title\">"<?php echo $post['title']; ?></h2>
+                    <p class=\"card-title\">Form Rating: <?php echo $post['score']; ?></p>
+                    <a href=\"#\" class=\"btn btn-primary\">+1</a>
+                    <a href=\"#\" class=\"btn btn-primary\">-1</a>
+                  </div>
+                  <div class=\"card-footer text-muted\">
+                    Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                  </div>
+                </div>
+                ";
+             endforeach; 
+        }
+        }
+        ?>
 
         <!-- Side Widget -->
         <div class="card my-4">
