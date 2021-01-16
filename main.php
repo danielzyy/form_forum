@@ -36,24 +36,29 @@ $userQuery->execute([
 $users = $userQuery->rowCount() ? $userQuery : [];
 
 //To search for post
-$searchQuery = $db->prepare("
+
+
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+  if (!empty(trim($_POST['search']))){
+    $search = $_POST['search'];
+    print "hellfl";
+    // header("location: login.php");
+    $searchQuery = $db->prepare("
       SELECT *
       FROM videos
       WHERE title = :search
-  ");
+    ");
 
-  $searchQuery->execute([
-      'search' => $search
-  ]);
+    $searchQuery->execute([
+        'search' => $search
+    ]);
 
-  $searchs = $searchQuery->rowCount() ? $searchQuery : [];
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-  if (!empty($_POST["search"])){
-    $search = $_POST["search"];
-    print "hellfl";
-    header("location: login.php");
+    $posts = $searchQuery->rowCount() ? $searchQuery : [];
   }
   
+}
+test(){
+  $search = $_POST['search']
 }
 ?>
  
@@ -112,39 +117,44 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         <h1 class="my-4">Welcome to Form Forum!
         </h1>
 
-        <?php if (empty($search)): ?>
+        <!-- <?php if (empty($search)): ?> -->
           <?php foreach($posts as $post): ?>
+            <?php if ($search==$post['title']): ?>
             <!-- Blog Post -->
-            <div class="card mb-4">
-              <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-              <div class="card-body">
-                <h2 class="card-title"><?php echo $post['title']; ?></h2>
-                <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+              <div class="card mb-4">
+                <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+                <div class="card-body">
+                <div class="line">
                 <a href="#" class="btn btn-primary">+1</a>
+                  <h2 class="card-title"><?php echo $post['title']; ?></h2>
+                </div>
+                <div class="line">
                 <a href="#" class="btn btn-primary">-1</a>
+                  <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+                </div>
+                </div>
+                <div class="card-footer text-muted">
+                  Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                </div>
               </div>
-              <div class="card-footer text-muted">
-                Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
-              </div>
+              <?php endif; ?>
+          <!-- <?php endforeach; ?> -->
+        <!-- <?php else: ?>
+          <?php foreach($searchs as $item): ?>
+          <div class="card mb-4">
+            <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+            <div class="card-body">
+              <h2 class="card-title"><?php echo $item['title']; ?></h2>
+              <p class="card-title">Form Rating: <?php echo $item['score']; ?></p>
+              <a href="#" class="btn btn-primary">+1</a>
+              <a href="#" class="btn btn-primary">-1</a>
             </div>
+            <div class="card-footer text-muted">
+              Posted on <?php echo substr($item['date'],0,10); ?> by <?php echo $item['username']; ?>
+            </div>
+          </div>
           <?php endforeach; ?>
-          <?php else: ?>
-            <?php foreach($searchs as $search): ?>
-            <!-- Blog Post -->
-            <div class="card mb-4">
-              <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-              <div class="card-body">
-                <h2 class="card-title"><?php echo $search['title']; ?></h2>
-                <p class="card-title">Form Rating: <?php echo $search['score']; ?></p>
-                <a href="#" class="btn btn-primary">+1</a>
-                <a href="#" class="btn btn-primary">-1</a>
-              </div>
-              <div class="card-footer text-muted">
-                Posted on <?php echo substr($search['date'],0,10); ?> by <?php echo $search['username']; ?>
-              </div>
-            </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
+        <?php endif; ?> -->
 
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">
@@ -165,13 +175,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         <div class="card my-4">
           <h5 class="card-header">Search</h5>
           <div class="card-body">
-            <div class="form-group">
+            <div class="input-group">
               <input type="text" name="search" class="form-control" placeholder="Search for...">
+              <div class="input-group-append">
+              <button type="submit" onClick="test()" class="btn btn-secondary" value="Go!">
+              </div>
             </div>
-            <div class="form-group">
-              <input type="submit" class="btn btn-secondary" value="Go!">
-            </div>
-
           </div>
         </div>
 
