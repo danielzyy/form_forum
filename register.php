@@ -63,7 +63,7 @@ else{
         }
     }
     
-    if(!empty(trim($_POST['password'])) && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err)){
+    if(!empty(trim($_POST['password'])) && strlen(trim($_POST['password'])) > 6 && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err) && trim($_POST['password'])==trim($_POST['confirm_password'])){
 
        // Prepare an insert statement
        $insert_statement = $db->prepare("
@@ -112,7 +112,6 @@ else{
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
-                <input type="reset" class="btn btn-default" value="Reset">
             </div>
             <p>Already have an account? <a href="login.php">Login here</a>.</p>
         </form>

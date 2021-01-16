@@ -58,7 +58,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
     <style type="text/css">
         body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        .wrapper{ width: 350px; padding: 20px; margin-top:60px}
     </style>
 </head>
 <body>
