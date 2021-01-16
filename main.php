@@ -83,8 +83,6 @@ $users = $userQuery->rowCount() ? $userQuery : [];
   </nav>
 
   
-
-  
   <div class="container">
 
     <div class="row">
@@ -164,22 +162,7 @@ $users = $userQuery->rowCount() ? $userQuery : [];
         $search-> execute();
 
         if($row = $search->fetch()){
-             foreach($posts as $post): 
-                echo "
-                <div class=\"card mb-4\">
-                  <img class=\"card-img-top\" src=\"http://placehold.it/750x300\" alt=\"Card image cap\">
-                  <div class=\"card-body\">
-                    <h2 class=\"card-title\">"<?php echo $post['title']; ?></h2>
-                    <p class=\"card-title\">Form Rating: <?php echo $post['score']; ?></p>
-                    <a href=\"#\" class=\"btn btn-primary\">+1</a>
-                    <a href=\"#\" class=\"btn btn-primary\">-1</a>
-                  </div>
-                  <div class=\"card-footer text-muted\">
-                    Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
-                  </div>
-                </div>
-                ";
-             endforeach; 
+            
         }
         }
         ?>
