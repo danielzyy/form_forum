@@ -210,7 +210,7 @@ $searchQuery = $db->prepare("
           <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
             <div class="form-group">
 				  <input type='file' name='file' />
-          <input type='submit' class="btn btn-secondary" data-dismiss="modal" value='Upload' name='vid_upload'>
+          <input type='submit' class="btn btn-secondary" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
                 <form method="post">
                 <input type="text" name="title" class="form-control mt-3" placeholder="Title">
                 </form>
