@@ -117,7 +117,7 @@ else{
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
             </div>
-            <p>Already have an account? <a href="login.php">Login here</a>.</p>
+            <p>Already have an account? <a href="index.php">Login here</a>.</p>
         </form>
     </div>    
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

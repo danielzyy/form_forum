@@ -11,13 +11,26 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 $_SESSION["video"] = "videos/Ascent Wallk Boost OP Kill (2020.08.11).mp4";
 $search = $_SESSION["search"];
 $username = $_SESSION["username"];
-$comment = "";
 //Submit Button
 if (isset($_POST["submit"])){
   $_SESSION["search"] = trim($_POST["search"]);
   $search = $_SESSION["search"];
 }
-
+if(isset($_POST['comment'])) {
+    $addComment = trim($_POST['comment']);
+  
+    if(!empty($addComment)) {
+        $addCommentQuery = $db->prepare("
+            INSERT INTO comments(username, video, comment, date)
+            VALUES (:username, :video, :comment, NOW())
+        ");
+        $addCommentQuery->execute([
+            'username' => $_SESSION["username"],
+            'video' => $_SESSION["video"],
+            'comment' => $addComment
+        ]);
+    }
+  }
 
 //prepare all comments
 
@@ -104,7 +117,6 @@ $searchQuery = $db->prepare("
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="./css/main.css">
   <!-- Bootstrap core CSS -->
-  
 
 </head>
 
@@ -113,7 +125,7 @@ $searchQuery = $db->prepare("
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light fixed-top" >
     <div class="container">
-      <img class="card-img-top" src="form.png" style="height: 60px; width: 195px;" alt="Card image cap">
+      <img class="card-img-top" src="form.png" style="height: 60px; width: 200px;" alt="Card image cap">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -142,9 +154,10 @@ $searchQuery = $db->prepare("
         <h1 class="my-4">Welcome to the Form Forum!
         </h1>
         <?php if($search==""): ?>
+          <?php $count = 0; ?>
           <?php foreach($posts as $post): ?>
-            <?php $_SESSION['video'] = $post['video']; ?>
-            <?php echo $post['video']; ?>
+            <!-- <?php $_SESSION['video'] = $post['video']; ?>
+            <?php echo $post['video'].($count+1); $count++;?> -->
             <!-- Blog Post -->
             <div class="card mb-4">
               <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
@@ -176,7 +189,7 @@ $searchQuery = $db->prepare("
                       <?php endforeach; ?>
                       </ul>
 
-                      <form class="form-group" action="add.php" method="post">
+                      <form class="form-group" method="post">
                         <input type="text" name="comment" class="form-control" autocomplete="off" placeholder="Add a Comment" required ><br>
                         <input type="submit" class="submit btn btn-primary" value="Add Comment">
                       </form>

@@ -22,16 +22,15 @@ require_once 'init.php';
 if(isset($_POST['comment'])) {
     $addComment = trim($_POST['comment']);
   
-    if(!empty($comment)) {
+    if(!empty($addComment)) {
         $addCommentQuery = $db->prepare("
             INSERT INTO comments(username, video, comment, date)
             VALUES (:username, :video, :comment, NOW())
         ");
         $addCommentQuery->execute([
-            'username' => $_SESSION['username'],
-            'video' => $_SESSION['video'],
+            'username' => $_SESSION["username"],
+            'video' => $_SESSION["video"],
             'comment' => $addComment
-            
         ]);
     }
   }
