@@ -58,12 +58,27 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
-    <style type="text/css">
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; margin-top:60px}
-    </style>
+    <img class="card-img-top" src="form.png" style="height: 90px; width: 293px; size:" alt="Card image cap">
 </head>
 <body>
+<style type="text/css">
+        body{ font: 14px sans-serif;
+            justify-content: center;
+            background-image: url(coolbackground);
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            padding-top: 120px;
+        }
+        .wrapper{ width: 350px; padding: 20px; margin-top:30px;
+            outline-style: double;
+            background-color:azure;
+            }
+        .card-img-top{
+            justify-content: center;
+            margin-left: 817px;   
+        }
+    </style>
     <div class="wrapper mx-auto">
         <h2>Login</h2>
         <p>Please fill in your credentials to login.</p>
