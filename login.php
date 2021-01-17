@@ -40,7 +40,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 session_start();
                 // Store data in session variables
                 $_SESSION["loggedin"] = true;
-                $_SESSION["score"] = $score;
+                $_SESSION["score"] = $row['score'];
                 $_SESSION["username"] = $username;
                 $_SESSION["search"] = "";
                 header("location: main.php");

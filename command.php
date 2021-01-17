@@ -2,31 +2,51 @@
 
 require_once 'init.php';
 
-if(isset($_GET['as'], $_GET['item'])) {
+if(isset($_GET['as'], $_GET['item'], $_GET['username'])) {
     $as = $_GET['as'];
     $item = $_GET['item'];
-
+    $username = $_GET['username'];
     switch($as) {
         case 'increase':
-            $increaseQuery = $db->prepare("
+            $increaseVideoQuery = $db->prepare("
                 UPDATE videos
                 SET score = score+1
                 WHERE id = :id
             ");
 
-            $increaseQuery->execute([
+            $increaseVideoQuery->execute([
                 'id' => $item
+            ]);
+
+            $increaseUserQuery = $db->prepare("
+                UPDATE users
+                SET score = score+1
+                WHERE username = :username
+            ");
+
+            $increaseUserQuery->execute([
+                'username' => $username
             ]);
         break;
         case 'decrease':
-            $decreaseQuery = $db->prepare("
+            $decreaseVideoQuery = $db->prepare("
                 UPDATE videos
                 SET score = score-1
                 WHERE id = :id
             ");
 
-            $decreaseQuery->execute([
+            $decreaseVideoQuery->execute([
                 'id' => $item
+            ]);
+            
+            $decreaseUserQuery = $db->prepare("
+                UPDATE users
+                SET score = score-1
+                WHERE username = :username
+            ");
+
+            $decreaseUserQuery->execute([
+                'username' => $username
             ]);
         break;
         // case 'delete':
