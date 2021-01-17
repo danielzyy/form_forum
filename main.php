@@ -9,7 +9,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     exit;
 }
 
-$_SESSION["video"] = "videos/Ascent Wallk Boost OP Kill (2020.08.11).mp4";
+$_SESSION["video"] = "";
 $search = $_SESSION["search"];
 $username = $_SESSION["username"];
 
@@ -279,7 +279,7 @@ $searchQuery = $db->prepare("
           <h5 class="card-header">Search</h5>
           <div class="card-body">
           <form method ="post">      
-              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for...">
+              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for..." autocomplete="off">
               <input type="submit" name="submit" class="btn btn-secondary mt-2" value="Go!">
             </form>
           </div>
@@ -311,7 +311,7 @@ $searchQuery = $db->prepare("
             <div class="form-group">
                   <input type='file' name='file' />
                   <form method="post">
-                <input type="text" name="title" class="form-control mt-3" placeholder="Title">
+                <input type="text" name="title" class="form-control mt-3" placeholder="Title" autocomplete="off">
                 </form>
             <input type='submit' href="command.php?as=n" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
                 <?php
