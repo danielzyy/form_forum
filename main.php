@@ -17,10 +17,8 @@ if (isset($_POST["submit"])){
   $search = $_SESSION["search"];
 }
 //Upload Button 
-// if (isset($_POST["vid_upload"])){
-//   $_SESSION["search"] = "";
-//   $search = $_SESSION["search"];
-// }
+
+
 //prepare all posts
 $postQuery = $db->prepare("
   SELECT id, username, title, video, score, date
@@ -88,13 +86,11 @@ $searchQuery = $db->prepare("
   <meta name="author" content="">
 
   <title>Form Forum Home</title>
+  <link rel="stylesheet" href="css/blog-home.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
 
   <!-- Bootstrap core CSS -->
-  <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
-
-  <!-- Custom styles for this template -->
-  <link href="css/blog-home.css" rel="stylesheet">
+  
 
 </head>
 
