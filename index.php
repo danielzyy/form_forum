@@ -63,7 +63,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <style type="text/css">
         body{ font: 14px sans-serif;
             justify-content: center;
-            background-image: url(coolbackground);
+            background-image: url(coolbackground.jpg);
             height: 100%;
             background-position: center;
             background-size: cover;
