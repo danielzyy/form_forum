@@ -8,7 +8,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
-$_SESSION["video"] = "";
+$_SESSION["video"] = "videos/Ascent Wallk Boost OP Kill (2020.08.11).mp4";
 $search = $_SESSION["search"];
 $username = $_SESSION["username"];
 $comment = "";
@@ -17,32 +17,18 @@ if (isset($_POST["submit"])){
   $_SESSION["search"] = trim($_POST["search"]);
   $search = $_SESSION["search"];
 }
-//Comment Button 
-if(isset($_POST['comment'])) {
-  $addComment = trim($_POST['comment']);
 
-  if(!empty($comment)) {
-      $addCommentQuery = $db->prepare("
-          INSERT INTO comments(username, video, comment, date)
-          VALUES (:username, :video, :comment, NOW())
-      ");
-      $addCommentQuery->execute([
-          'comment' => $addComment,
-          'username' => $_SESSION['username'],
-          'video' => $_SESSION['video']
-          
-      ]);
-  }
-}
 
 //prepare all comments
 
 $commentQuery = $db->prepare("
   SELECT *
   FROM comments
+  WHERE video = :video
 ");
 
 $commentQuery->execute([
+  'video' => $_SESSION["video"]
 ]);
 
 $comments = $commentQuery->rowCount() ? $commentQuery : [];
@@ -157,7 +143,8 @@ $searchQuery = $db->prepare("
         </h1>
         <?php if($search==""): ?>
           <?php foreach($posts as $post): ?>
-            <?php $_SESSION["video"] = $post['video']; ?>
+            <?php $_SESSION['video'] = $post['video']; ?>
+            <?php echo $post['video']; ?>
             <!-- Blog Post -->
             <div class="card mb-4">
               <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
@@ -179,21 +166,19 @@ $searchQuery = $db->prepare("
                       <div class="modal-body">
                       <ul class="items">
                       <?php foreach($comments as $comment): ?>
-
-                        <?php if($comment['video']==$post['id']): ?>
+                        <?php echo $_SESSION['video']; ?>
                           <li>
-                            
                             <span class="comment" ><?php echo $comment['comment']; ?></span>
                             <div class="text-muted">
                               <?php echo substr($post['date'],0,10); ?> - <?php echo $comment['username']; ?>
                             </div>
                           </li>
-                          <?php endif; ?>
                       <?php endforeach; ?>
                       </ul>
-                      <form method="post">
-                        <input type="text" name="comment" class="form-control mt-3" placeholder="Add a Comment">
-                        <input type="submit" value="Add" class="submit btn btn-primary mt-2" value="Add Comment">
+
+                      <form class="form-group" action="add.php" method="post">
+                        <input type="text" name="comment" class="form-control" autocomplete="off" placeholder="Add a Comment" required ><br>
+                        <input type="submit" class="submit btn btn-primary" value="Add Comment">
                       </form>
                       </div>
                       <div class="modal-footer">
@@ -280,7 +265,7 @@ $searchQuery = $db->prepare("
             <div class="form-group">
                   <input type='file' name='file' />
                   <form method="post">
-                <input type="text" name="title" class="form-control mt-3" placeholder="Title" autocomplete="off" >
+                <input type="text" name="title" class="form-control mt-3" placeholder="Title" autocomplete="off" required>
                 <input type='submit' href="command.php?as=n" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
 
                 </form>
