@@ -156,8 +156,8 @@ $searchQuery = $db->prepare("
         <?php if($search==""): ?>
           <?php $count = 0; ?>
           <?php foreach($posts as $post): ?>
-            <!-- <?php $_SESSION['video'] = $post['video']; ?>
-            <?php echo $post['video'].($count+1); $count++;?> -->
+            <?php $_SESSION['video'] = $post['video']; ?>
+            <?php echo $_SESSION['video']?>
             <!-- Blog Post -->
             <div class="card mb-4">
               <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
