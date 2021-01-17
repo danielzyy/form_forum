@@ -66,10 +66,6 @@ $searchQuery = $db->prepare("
 
   $searchs = $searchQuery->rowCount() ? $searchQuery : [];
 
-  //get User
-  foreach ($db->query("SELECT id, username, password, score FROM users WHERE username = '".$username."'") as $row){
-    $_SESSION["score"] = $row['score'];
-  }
 ?>
  
 <!DOCTYPE html>
@@ -126,6 +122,7 @@ $searchQuery = $db->prepare("
       <div class="col-md-8">
         <h1 class="my-4">Welcome to Form Forum!
         </h1>
+
         <?php if($search==""): ?>
           <?php foreach($posts as $post): ?>
             <!-- Blog Post -->
@@ -134,8 +131,8 @@ $searchQuery = $db->prepare("
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">+1</a>
-                <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
+                <a href="command.php?as=increase&item=<?php echo $post['id']; ?>" class="btn btn-primary">+1</a>
+                <a href="command.php?as=decrease&item=<?php echo $post['id'];?>" class="btn btn-primary">-1</a>
               </div>
               <div class="card-footer text-muted">
                 Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -152,8 +149,8 @@ $searchQuery = $db->prepare("
                     <div class="card-body">
                       <h2 class="card-title"><?php echo $post['title']; ?></h2>
                       <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">+1</a>
-                      <a href="command.php?as=decrease&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">-1</a>
+                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>" class="btn btn-primary">+1</a>
+                      <a href="command.php?as=decrease&item=<?php echo $post['id'];?>" class="btn btn-primary">-1</a>
                     </div>
                     <div class="card-footer text-muted">
                       Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -196,7 +193,6 @@ $searchQuery = $db->prepare("
             <img class="card-img-top" src="http://placehold.it/180x180" alt="Card image cap" 
             style="padding-bottom: 20px; border-radius:50%;">
             <h1><?php echo $_SESSION["username"] ?></h1>
-            <p>Account Form Rating: <?php echo $_SESSION["score"] ?></p>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submit">Add Post</button>
           </div>
         </div>
@@ -218,7 +214,6 @@ $searchQuery = $db->prepare("
                 <input type="text" name="title" class="form-control mt-3" placeholder="Title">
                 </form>
             <input type='submit' class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
-            <data-dismiss="modal">
                 <?php
                     @$title = $_POST["title"];
 
