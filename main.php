@@ -89,7 +89,7 @@ $searchQuery = $db->prepare("
 
   <title>Form Forum Home</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
-
+  <link rel="stylesheet" href="./css/main.css">
   <!-- Bootstrap core CSS -->
   <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
 
@@ -101,9 +101,9 @@ $searchQuery = $db->prepare("
 <body>
 
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: lightblue;">
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top" >
     <div class="container">
-      <img class="card-img-top" src="form.png" style="height: 50px; width: 170px;" alt="Card image cap">
+      <img class="card-img-top" src="form.png" style="height: 60px; width: 195px;" alt="Card image cap">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -129,7 +129,7 @@ $searchQuery = $db->prepare("
 
       <!-- Blog Entries Column -->
       <div class="col-md-8">
-        <h1 class="my-4">Welcome to Form Forum!
+        <h1 class="my-4">Welcome to the Form Forum!
         </h1>
         <?php if($search==""): ?>
           <?php foreach($posts as $post): ?>
@@ -139,7 +139,7 @@ $searchQuery = $db->prepare("
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">+1</a>
+                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-danger">+1</a>
                 <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
               </div>
               <div class="card-footer text-muted">
@@ -157,7 +157,7 @@ $searchQuery = $db->prepare("
                     <div class="card-body">
                       <h2 class="card-title"><?php echo $post['title']; ?></h2>
                       <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">+1</a>
+                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-danger">+1</a>
                       <a href="command.php?as=decrease&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">-1</a>
                     </div>
                     <div class="card-footer text-muted">
@@ -198,8 +198,7 @@ $searchQuery = $db->prepare("
         <div class="card my-4">
           <h5 class="card-header">Profile</h5>
           <div class="card-body">
-            <img class="card-img-top" src="http://placehold.it/180x180" alt="Card image cap" 
-            style="padding-bottom: 20px; border-radius:50%;">
+            <img class="card-img-top" src="img.png" alt="Card image cap" border-radius:50%;">
             <h1><?php echo $_SESSION["username"] ?></h1>
             <p>Account Form Rating: <?php echo $_SESSION["score"] ?></p>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submit">Add Post</button>
@@ -290,9 +289,9 @@ $searchQuery = $db->prepare("
   <!-- /.container -->
 
   <!-- Footer -->
-  <footer class="py-5 bg-dark">
+  <footer class="py-2 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2020</p>
+      <p class="m-0 text-center text-white">HTN 2020++ <3</p>
     </div>
     <!-- /.container -->
   </footer>
