@@ -207,13 +207,14 @@ $searchQuery = $db->prepare("
             </div>
             <div class="modal-body">
                 <div class="container">
-          <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
+          <form [formGroup]="addPostForm" method="post" enctype='multipart/form-data'>
             <div class="form-group">
-				  <input type='file' name='file' />
-          <input type='submit' class="btn btn-secondary" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
-                <form method="post">
+                  <input type='file' name='file' />
+                  <form method="post">
                 <input type="text" name="title" class="form-control mt-3" placeholder="Title">
                 </form>
+            <input type='submit' class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
+            <data-dismiss="modal">
                 <?php
                     @$title = $_POST["title"];
 
@@ -252,12 +253,7 @@ $searchQuery = $db->prepare("
                     }
                     }
                 ?>
-
             </div>
-            <div class="form-group">
-              <!-- <a href="main.php" type='submit' class="btn btn-secondary"value='Upload' name='vid_upload' data-dismiss="modal">Submit</a> -->
-              
-        </div>
       </form >
     </div>
             </div>
