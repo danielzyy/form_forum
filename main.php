@@ -5,9 +5,11 @@ session_start();
 require_once "init.php";
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.php");
+    header("location: index.php");
     exit;
 }
+
+$_SESSION["video"] = "videos/Ascent Wallk Boost OP Kill (2020.08.11).mp4";
 $search = $_SESSION["search"];
 $username = $_SESSION["username"];
 
@@ -16,8 +18,35 @@ if (isset($_POST["submit"])){
   $_SESSION["search"] = trim($_POST["search"]);
   $search = $_SESSION["search"];
 }
-//Upload Button 
 
+if(isset($_POST['comment'])) {
+  $addComment = trim($_POST['comment']);
+
+  if(!empty($addComment)) {
+      $addCommentQuery = $db->prepare("
+          INSERT INTO comments(username, video, comment, date)
+          VALUES (:username, :video, :comment, NOW())
+      ");
+      $addCommentQuery->execute([
+          'username' => $_SESSION["username"],
+          'video' => $_SESSION["video"],
+          'comment' => $addComment
+      ]);
+  }
+}
+
+//prepare all comments
+
+$commentQuery = $db->prepare("
+  SELECT *
+  FROM comments
+");
+
+$commentQuery->execute([
+  // 'video' => $_SESSION["video"]
+]);
+
+$comments = $commentQuery->rowCount() ? $commentQuery : [];
 
 //prepare all posts
 $postQuery = $db->prepare("
@@ -128,9 +157,7 @@ $searchQuery = $db->prepare("
         <h1 class="my-4">Welcome to the Form Forum!
         </h1>
         <?php if($search==""): ?>
-          <?php foreach($posts as $post): ?>
-            <?php $_SESSION['video'] = $post['video']; ?>
-            <?php echo $_SESSION['video']?>
+            <?php foreach($posts as $post): ?>
             <!-- Blog Post -->
             <div class="card mb-4">
               <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
@@ -141,7 +168,7 @@ $searchQuery = $db->prepare("
                 <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Comments</button>
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
+                  <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
@@ -150,13 +177,24 @@ $searchQuery = $db->prepare("
                         </button>
                       </div>
                       <div class="modal-body">
-                      <form method="post">
-                      <input type="text" name="comment" class="form-control mt-3" placeholder="Add a Comment">
+                      <ul class="items">
+                      <?php foreach($comments as $comment): ?>
+                          <li>
+                            <span class="comment" ><?php echo $comment['comment']; ?></span>
+                            <div class="text-muted">
+                              <?php echo substr($post['date'],0,10); ?> - <?php echo $comment['username']; ?>
+                            </div>
+                          </li>
+                      <?php endforeach; ?>
+                      </ul>
+
+                      <form class="form-group" method="post">
+                        <input type="text" name="comment" class="form-control" autocomplete="off" placeholder="Add a Comment" required ><br>
+                        <input type="submit" class="submit btn btn-primary" value="Add Comment">
                       </form>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Add Comment</button>
                       </div>
                     </div>
                   </div>
@@ -168,23 +206,57 @@ $searchQuery = $db->prepare("
             </div>
           <?php endforeach; ?>
 
+
             <?php else: ?>
               <?php if(!empty($searchs)): ?>
                 <?php foreach($searchs as $post): ?>
-                  <!-- Blog Post -->
-                  <div class="card mb-4">
-                    <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
-                    <div class="card-body">
-                      <h2 class="card-title"><?php echo $post['title']; ?></h2>
-                      <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-danger">+1</a>
-                      <a href="command.php?as=decrease&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">-1</a>
-                    </div>
-                    <div class="card-footer text-muted">
-                      Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                 <!-- Blog Post -->
+            <div class="card mb-4">
+              <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
+              <div class="card-body">
+                <h2 class="card-title"><?php echo $post['title']; ?></h2>
+                <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-danger">+1</a>
+                <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Comments</button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                      <ul class="items">
+                      <?php foreach($comments as $comment): ?>
+                          <li>
+                            <span class="comment" ><?php echo $comment['comment']; ?></span>
+                            <div class="text-muted">
+                              <?php echo substr($post['date'],0,10); ?> - <?php echo $comment['username']; ?>
+                            </div>
+                          </li>
+                      <?php endforeach; ?>
+                      </ul>
+
+                      <form class="form-group" method="post">
+                        <input type="text" name="comment" class="form-control" autocomplete="off" placeholder="Add a Comment" required ><br>
+                        <input type="submit" class="submit btn btn-primary" value="Add Comment">
+                      </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                      </div>
                     </div>
                   </div>
-                <?php endforeach; ?>
+                </div>
+              </div>
+              <div class="card-footer text-muted">
+                Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
               <?php else: ?>
                 <?php echo "No videos found." ?>
               <?php endif; ?>

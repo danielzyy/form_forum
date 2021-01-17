@@ -52,7 +52,7 @@ else{
         }
     }
     
-    if(!empty(trim($_POST['password'])) && strlen(trim($_POST['password'])) > 6 && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err) && trim($_POST['password'])==trim($_POST['confirm_password'])){
+    if(!empty(trim($_POST['password'])) && strlen(trim($_POST['password'])) >= 6 && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err) && trim($_POST['password'])==trim($_POST['confirm_password'])){
 
        // Prepare an insert statement
        $insert_statement = $db->prepare("
@@ -64,6 +64,8 @@ else{
             'username' => $username,
             'password' => $password
         ]);
+
+        header("location: main.php");
     } 
 }
 ?>
