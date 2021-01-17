@@ -65,32 +65,6 @@ $searchQuery = $db->prepare("
   ]);
 
   $searchs = $searchQuery->rowCount() ? $searchQuery : [];
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-  if (!empty($_POST["search"])){
-    $search = $_POST["search"];
-    print "hellfl";
-    header("location: login.php");
-  }
-  
-}
-
-
-
-
-
-
-//$fetchVideos=mysqli_query($connection, "SELECT * FROM videos ORDER BY id DESC");
-//while($row=mysqli_fetch_assoc($fetchVideos)){
-	//$location=$row['location'];
-	//$name=$row['name'];
-// 	echo "<div style='float:left; margin-right:5px;'>
-// 		<video src='".$location."' controls width='320px' height='320px'></video>
-// 		<br>
-// 		<span>".$name."</span>
-// 	</div>";
-// }
-
-
 
 ?>
  
@@ -153,41 +127,39 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           <?php foreach($posts as $post): ?>
             <!-- Blog Post -->
             <div class="card mb-4">
-            <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
+              <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
                 <a href="#" class="btn btn-primary">+1</a>
                 <a href="#" class="btn btn-primary">-1</a>
-                <div class="card-footer text-muted">
-                  Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
-                </div>
               </div>
-            <?php endforeach; ?>
+              <div class="card-footer text-muted">
+                Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+
             <?php else: ?>
               <?php if(!empty($searchs)): ?>
-              <?php foreach($searchs as $post): ?>
-            <!-- Blog Post -->
-              <div class="card mb-4">
-                <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-                <div class="card-body">
-                <div class="line">
-                <a href="#" class="btn btn-primary">+1</a>
-                  <h2 class="card-title"><?php echo $post['title']; ?></h2>
-                </div>
-                <div class="line">
-                <a href="#" class="btn btn-primary">-1</a>
-                  <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                </div>
-                </div>
-                <div class="card-footer text-muted">
-                  Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
-                </div>
-              </div>
-            <?php endforeach; ?>
-            <?php else: ?>
-              <?php echo "No videos found." ?>
-            <?php endif; ?>
+                <?php foreach($searchs as $post): ?>
+                  <!-- Blog Post -->
+                  <div class="card mb-4">
+                    <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
+                    <div class="card-body">
+                      <h2 class="card-title"><?php echo $post['title']; ?></h2>
+                      <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+                      <a href="#" class="btn btn-primary">+1</a>
+                      <a href="#" class="btn btn-primary">-1</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                      Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <?php echo "No videos found." ?>
+              <?php endif; ?>
             <?php endif; ?>
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">
@@ -203,22 +175,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
       <!-- Sidebar Widgets Column -->
       <div class="col-md-4">
-
         <!-- Search Widget -->
         <div class="card my-4">
           <h5 class="card-header">Search</h5>
           <div class="card-body">
           <form method ="post">      
               <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for...">
-              <input type="submit" name="submit" class="btn btn-secondary" value="Go!">
+              <input type="submit" name="submit" class="btn btn-secondary mt-2" value="Go!">
             </form>
           </div>
         </div>
-
-        <!-- Php code to search -->
-        <?php
-        
-        ?>
 
         <!-- Side Widget -->
         <div class="card my-4">
@@ -227,14 +193,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <img class="card-img-top" src="http://placehold.it/180x180" alt="Card image cap" 
             style="padding-bottom: 20px; border-radius:50%;">
             <h1><?php echo $_SESSION["username"] ?></h1>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Post</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submit">Add Post</button>
           </div>
         </div>
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="submit" tabindex="-1" role="dialog" aria-labelledby="submitLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Create New Post</h5>
+              <h5 class="modal-title" id="submitLabel">Create New Post</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -243,17 +209,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <div class="container">
           <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
             <div class="form-group">
-				<input type='file' name='file' />
-				<input type='submit' value='Upload' name='vid_upload'>
+				  <input type='file' name='file' />
+          <input type='submit' class="btn btn-secondary" data-dismiss="modal" value='Upload' name='vid_upload'>
                 <form method="post">
-                <input type="text" name="title" class="form-control" placeholder="Title">
+                <input type="text" name="title" class="form-control mt-3" placeholder="Title">
                 </form>
                 <?php
                     @$title = $_POST["title"];
 
                     if(isset($_POST['vid_upload'])){
                         $maxsize=262144000;//250 mb
-                        if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != ''){
+                        if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != '' && trim($title)!=''){
                             $name = $_FILES['file']['name'];
                             $target_dir = "videos/";
                             $target_file = $target_dir . $_FILES["file"]["name"];
@@ -278,26 +244,25 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             }
                         
                         }else{
-                            $_SESSION['message']="Invalid file extension.";
+                            $_SESSION['message'] = "Invalid file/title name.";
+                            echo $_SESSION['message'];
                         }
                     }else{
                         $_SESSION['message']="Please select a file.";
                     }
-                        
-                    exit;
                     }
                 ?>
 
             </div>
             <div class="form-group">
-              <a href="main.php" class="btn btn-primary" data-dismiss="modal">Submit</a>
-              <a class="btn btn-primary">Add Video</a>
+              <!-- <a href="main.php" type='submit' class="btn btn-secondary"value='Upload' name='vid_upload' data-dismiss="modal">Submit</a> -->
+              
         </div>
       </form >
     </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
