@@ -58,44 +58,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 }
 
 
-if(isset($_POST['vid_upload'])){
-	$maxsize=262144000;//250 mb
-	if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != ''){
-		$name = $_FILES['file']['name'];
-		$target_dir = "videos/";
-		$target_file = $target_dir . $_FILES["file"]["name"];
-		
-		$extension=strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-		$extensions_arr=array("mp4","avi","flv","wmv","mov", "mpeg");
-		
-		if(in_array($extension,$extensions_arr)){
-			
-			if(($_FILES['file']['size']>=$maxsize) || ($_FILES["file"]["size"]==0)){
-				$_SESSION['message']= "File is larger than 250 mb.";
-		}else{
-			if(move_uploaded_file($_FILES['file']['tmp_name'],$target_file)){
-				$query=$db->prepare("INSERT INTO videos(username,title,video,score, date) VALUES('".$name."','".$target_file."','".$target_file."',0,NOW())");
-				
-				$query->execute([
-				'username' => $username
-				]);
-				$_SESSION['message']="Uploaded Successfully.";
-			}
-		}
-	
-	}else{
-		$_SESSION['message']="Invalid file extension.";
-	}
-}else{
-	$_SESSION['message']="Please select a file.";
-}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> d772f80ea5dd19ca14abede9a5cba69e9de4a325
-exit;
-}
 
 
 
@@ -222,11 +185,7 @@ exit;
         $search-> execute();
 
         if($row = $search->fetch()){
-<<<<<<< HEAD
             
-=======
-        
->>>>>>> d772f80ea5dd19ca14abede9a5cba69e9de4a325
         }
         }
         ?>
@@ -256,8 +215,49 @@ exit;
             <div class="form-group">
 				<input type='file' name='file' />
 				<input type='submit' value='Upload' name='vid_upload'>
-				<label class="post-title">Title</label>
-				<input type="text" [formControlName]="'title'" class="form-control" placeholder="Title">
+                <form method="post">
+                <input type="text" name="title" class="form-control" placeholder="Title">
+                </form>
+                <?php
+                    @$title = $_POST["title"];
+
+                    if(isset($_POST['vid_upload'])){
+                        $maxsize=262144000;//250 mb
+                        if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != ''){
+                            $name = $_FILES['file']['name'];
+                            $target_dir = "videos/";
+                            $target_file = $target_dir . $_FILES["file"]["name"];
+                            
+                            $extension=strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+                            $extensions_arr=array("mp4","avi","flv","wmv","mov", "mpeg");
+                            
+                            if(in_array($extension,$extensions_arr)){
+                                
+                                if(($_FILES['file']['size']>=$maxsize) || ($_FILES["file"]["size"]==0)){
+                                    $_SESSION['message']= "File is larger than 250 mb.";
+                            }else{
+                                if(move_uploaded_file($_FILES['file']['tmp_name'],$target_file)){
+                                    $query=$db->prepare("INSERT INTO videos(username,title,video,score, date) VALUES('".$username."','".$title."','".$target_file."',0,NOW())");
+                                    
+                                    $query->execute([
+                                    'username' => $username,
+                                    'title' => $title
+                                    ]);
+                                    $_SESSION['message']="Uploaded Successfully.";
+                                }
+                            }
+                        
+                        }else{
+                            $_SESSION['message']="Invalid file extension.";
+                        }
+                    }else{
+                        $_SESSION['message']="Please select a file.";
+                    }
+                        
+                    exit;
+                    }
+                ?>
+
             </div>
             <div class="form-group">
               <a href="main.php" class="btn btn-primary" data-dismiss="modal">Submit</a>
@@ -272,6 +272,7 @@ exit;
           </div>
         </div>
       </div>
+      
 
 
 
