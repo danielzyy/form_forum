@@ -20,7 +20,8 @@ if (isset($_POST["submit"])){
 $postQuery = $db->prepare("
   SELECT id, username, title, video, score, date
   FROM videos
-  ");
+  ORDER BY id DESC
+");
 
 $postQuery->execute([
 ]);
@@ -51,6 +52,45 @@ $userQuery->execute([
 ]);
 
 $users = $userQuery->rowCount() ? $userQuery : [];
+
+//To search for post
+$searchQuery = $db->prepare("
+      SELECT *
+      FROM videos
+      WHERE title = :search
+  ");
+
+  $searchQuery->execute([
+      'search' => $search
+  ]);
+
+  $searchs = $searchQuery->rowCount() ? $searchQuery : [];
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+  if (!empty($_POST["search"])){
+    $search = $_POST["search"];
+    print "hellfl";
+    header("location: login.php");
+  }
+  
+}
+
+
+
+
+
+
+//$fetchVideos=mysqli_query($connection, "SELECT * FROM videos ORDER BY id DESC");
+//while($row=mysqli_fetch_assoc($fetchVideos)){
+	//$location=$row['location'];
+	//$name=$row['name'];
+// 	echo "<div style='float:left; margin-right:5px;'>
+// 		<video src='".$location."' controls width='320px' height='320px'></video>
+// 		<br>
+// 		<span>".$name."</span>
+// 	</div>";
+// }
+
+
 
 ?>
  
@@ -100,8 +140,6 @@ $users = $userQuery->rowCount() ? $userQuery : [];
   </nav>
 
   
-
-  
   <div class="container">
 
     <div class="row">
@@ -110,21 +148,17 @@ $users = $userQuery->rowCount() ? $userQuery : [];
       <div class="col-md-8">
         <h1 class="my-4">Welcome to Form Forum!
         </h1>
+
         <?php if($search==""): ?>
           <?php foreach($posts as $post): ?>
             <!-- Blog Post -->
-              <div class="card mb-4">
-                <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-                <div class="card-body">
-                <div class="line">
+            <div class="card mb-4">
+            <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
+              <div class="card-body">
+                <h2 class="card-title"><?php echo $post['title']; ?></h2>
+                <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
                 <a href="#" class="btn btn-primary">+1</a>
-                  <h2 class="card-title"><?php echo $post['title']; ?></h2>
-                </div>
-                <div class="line">
                 <a href="#" class="btn btn-primary">-1</a>
-                  <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                </div>
-                </div>
                 <div class="card-footer text-muted">
                   Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
                 </div>
@@ -207,10 +241,53 @@ $users = $userQuery->rowCount() ? $userQuery : [];
             </div>
             <div class="modal-body">
                 <div class="container">
-          <form [formGroup]="addPostForm">
+          <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
             <div class="form-group">
-              <label class="post-title">Title</label>
-              <input type="text" [formControlName]="'title'" class="form-control" placeholder="Title">
+				<input type='file' name='file' />
+				<input type='submit' value='Upload' name='vid_upload'>
+                <form method="post">
+                <input type="text" name="title" class="form-control" placeholder="Title">
+                </form>
+                <?php
+                    @$title = $_POST["title"];
+
+                    if(isset($_POST['vid_upload'])){
+                        $maxsize=262144000;//250 mb
+                        if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != ''){
+                            $name = $_FILES['file']['name'];
+                            $target_dir = "videos/";
+                            $target_file = $target_dir . $_FILES["file"]["name"];
+                            
+                            $extension=strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+                            $extensions_arr=array("mp4","avi","flv","wmv","mov", "mpeg");
+                            
+                            if(in_array($extension,$extensions_arr)){
+                                
+                                if(($_FILES['file']['size']>=$maxsize) || ($_FILES["file"]["size"]==0)){
+                                    $_SESSION['message']= "File is larger than 250 mb.";
+                            }else{
+                                if(move_uploaded_file($_FILES['file']['tmp_name'],$target_file)){
+                                    $query=$db->prepare("INSERT INTO videos(username,title,video,score, date) VALUES('".$username."','".$title."','".$target_file."',0,NOW())");
+                                    
+                                    $query->execute([
+                                    'username' => $username,
+                                    'title' => $title
+                                    ]);
+                                    $_SESSION['message']="Uploaded Successfully.";
+                                }
+                            }
+                        
+                        }else{
+                            $_SESSION['message']="Invalid file extension.";
+                        }
+                    }else{
+                        $_SESSION['message']="Please select a file.";
+                    }
+                        
+                    exit;
+                    }
+                ?>
+
             </div>
             <div class="form-group">
               <a href="main.php" class="btn btn-primary" data-dismiss="modal">Submit</a>
@@ -225,6 +302,7 @@ $users = $userQuery->rowCount() ? $userQuery : [];
           </div>
         </div>
       </div>
+      
 
 
 
