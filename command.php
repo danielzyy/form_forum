@@ -49,6 +49,8 @@ if(isset($_GET['as'], $_GET['item'], $_GET['username'])) {
                 'username' => $username
             ]);
         break;
+        default:
+            break;
         // case 'delete':
         //     $deleteQuery = $db->prepare("
         //         DELETE FROM items
