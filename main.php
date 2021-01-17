@@ -131,8 +131,8 @@ $searchQuery = $db->prepare("
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                <a href="#" class="btn btn-primary">+1</a>
-                <a href="#" class="btn btn-primary">-1</a>
+                <a href="command.php?as=increase&item=<?php echo $post['id']; ?>" class="btn btn-primary">+1</a>
+                <a href="command.php?as=decrease&item=<?php echo $post['id'];?>" class="btn btn-primary">-1</a>
               </div>
               <div class="card-footer text-muted">
                 Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -149,8 +149,8 @@ $searchQuery = $db->prepare("
                     <div class="card-body">
                       <h2 class="card-title"><?php echo $post['title']; ?></h2>
                       <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                      <a href="#" class="btn btn-primary">+1</a>
-                      <a href="#" class="btn btn-primary">-1</a>
+                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>" class="btn btn-primary">+1</a>
+                      <a href="command.php?as=decrease&item=<?php echo $post['id'];?>" class="btn btn-primary">-1</a>
                     </div>
                     <div class="card-footer text-muted">
                       Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -210,7 +210,7 @@ $searchQuery = $db->prepare("
           <form [formGroup]="addPostForm" method="post" action="" enctype='multipart/form-data'>
             <div class="form-group">
 				  <input type='file' name='file' />
-            <input type='submit' class="btn btn-secondary" data-dismiss="modal" value='Upload' name='vid_upload'>
+          <input type='submit' class="btn btn-secondary" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
                 <form method="post">
                 <input type="text" name="title" class="form-control mt-3" placeholder="Title">
                 </form>
