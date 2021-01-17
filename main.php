@@ -8,20 +8,37 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
-$search = "";
+$search = $_SESSION["search"];
 $username = $_SESSION["username"];
+
+//Submit Button
+if (isset($_POST["submit"])){
+  $_SESSION["search"] = trim($_POST["search"]);
+  $search = $_SESSION["search"];
+}
 //prepare all posts
 $postQuery = $db->prepare("
   SELECT id, username, title, video, score, date
   FROM videos
-");
+  ");
 
 $postQuery->execute([
-    
 ]);
 
 $posts = $postQuery->rowCount() ? $postQuery : [];
 
+//Search posts
+$searchQuery = $db->prepare("
+  SELECT id, username, title, video, score, date
+  FROM videos
+  WHERE title = :search
+  ");
+
+$searchQuery->execute([
+    'search' => $search
+]);
+
+$searchs = $searchQuery->rowCount() ? $searchQuery : [];
 // To get User-specific posts
 $userQuery = $db->prepare("
     SELECT id, username, title, video, score, date
@@ -93,10 +110,8 @@ $users = $userQuery->rowCount() ? $userQuery : [];
       <div class="col-md-8">
         <h1 class="my-4">Welcome to Form Forum!
         </h1>
-
-        <!-- <?php if (empty($search)): ?> -->
+        <?php if($search==""): ?>
           <?php foreach($posts as $post): ?>
-            <?php if ($search==$post['title']): ?>
             <!-- Blog Post -->
               <div class="card mb-4">
                 <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
@@ -114,25 +129,32 @@ $users = $userQuery->rowCount() ? $userQuery : [];
                   Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
                 </div>
               </div>
-              <?php endif; ?>
-          <!-- <?php endforeach; ?> -->
-        <!-- <?php else: ?>
-          <?php foreach($searchs as $item): ?>
-          <div class="card mb-4">
-            <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-            <div class="card-body">
-              <h2 class="card-title"><?php echo $item['title']; ?></h2>
-              <p class="card-title">Form Rating: <?php echo $item['score']; ?></p>
-              <a href="#" class="btn btn-primary">+1</a>
-              <a href="#" class="btn btn-primary">-1</a>
-            </div>
-            <div class="card-footer text-muted">
-              Posted on <?php echo substr($item['date'],0,10); ?> by <?php echo $item['username']; ?>
-            </div>
-          </div>
-          <?php endforeach; ?>
-        <?php endif; ?> -->
-
+            <?php endforeach; ?>
+            <?php else: ?>
+              <?php if(!empty($searchs)): ?>
+              <?php foreach($searchs as $post): ?>
+            <!-- Blog Post -->
+              <div class="card mb-4">
+                <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+                <div class="card-body">
+                <div class="line">
+                <a href="#" class="btn btn-primary">+1</a>
+                  <h2 class="card-title"><?php echo $post['title']; ?></h2>
+                </div>
+                <div class="line">
+                <a href="#" class="btn btn-primary">-1</a>
+                  <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+                </div>
+                </div>
+                <div class="card-footer text-muted">
+                  Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                </div>
+              </div>
+            <?php endforeach; ?>
+            <?php else: ?>
+              <?php echo "No videos found." ?>
+            <?php endif; ?>
+            <?php endif; ?>
         <!-- Pagination -->
         <ul class="pagination justify-content-center mb-4">
           <li class="page-item">
@@ -161,32 +183,7 @@ $users = $userQuery->rowCount() ? $userQuery : [];
 
         <!-- Php code to search -->
         <?php
-        if (isset($_POST["submit"])){
-        $entry = $_POST["search"];
-        $search = $db->prepare("SELECT * FROM videos WHERE title = '$entry'");
-
-        $search->setFetchMode(PDO:: FETCH_OBJ);
-        $search-> execute();
-
-        if($row = $search->fetch()){
-             foreach($posts as $post): 
-                echo "
-                <div class=\"card mb-4\">
-                  <img class=\"card-img-top\" src=\"http://placehold.it/750x300\" alt=\"Card image cap\">
-                  <div class=\"card-body\">
-                    <h2 class=\"card-title\">"<?php echo $post['title']; ?></h2>
-                    <p class=\"card-title\">Form Rating: <?php echo $post['score']; ?></p>
-                    <a href=\"#\" class=\"btn btn-primary\">+1</a>
-                    <a href=\"#\" class=\"btn btn-primary\">-1</a>
-                  </div>
-                  <div class=\"card-footer text-muted\">
-                    Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
-                  </div>
-                </div>
-                ";
-             endforeach; 
-        }
-        }
+        
         ?>
 
         <!-- Side Widget -->

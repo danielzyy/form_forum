@@ -42,6 +42,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 $_SESSION["loggedin"] = true;
                 $_SESSION["score"] = $score;
                 $_SESSION["username"] = $username;
+                $_SESSION["search"] = "";
                 header("location: main.php");
             }
         }
