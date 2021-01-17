@@ -137,6 +137,28 @@ $searchQuery = $db->prepare("
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
                 <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-danger">+1</a>
                 <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Comments</button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                      <form method="post">
+                      <input type="text" name="comment" class="form-control mt-3" placeholder="Add a Comment">
+                      </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Add Comment</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="card-footer text-muted">
                 Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -174,7 +196,6 @@ $searchQuery = $db->prepare("
             <a class="page-link" href="#">Newer &rarr;</a>
           </li>
         </ul>
-
       </div>
 
       <!-- Sidebar Widgets Column -->

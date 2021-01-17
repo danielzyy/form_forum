@@ -15,6 +15,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 if(empty(trim($_POST['username']))){
     $username_error = "You did not enter a username. Please try again.";
 }
+
 else{
     $test_username = trim($_POST['username']);
     foreach ($db->query("SELECT username FROM users") as $row){
