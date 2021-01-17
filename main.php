@@ -131,8 +131,8 @@ $searchQuery = $db->prepare("
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                <a href="#" class="btn btn-primary">+1</a>
-                <a href="#" class="btn btn-primary">-1</a>
+                <a href="command.php?as=increase&item=<?php echo $post['id']; ?>" class="btn btn-primary">+1</a>
+                <a href="command.php?as=decrease&item=<?php echo $post['id'];?>" class="btn btn-primary">-1</a>
               </div>
               <div class="card-footer text-muted">
                 Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -149,8 +149,8 @@ $searchQuery = $db->prepare("
                     <div class="card-body">
                       <h2 class="card-title"><?php echo $post['title']; ?></h2>
                       <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                      <a href="#" class="btn btn-primary">+1</a>
-                      <a href="#" class="btn btn-primary">-1</a>
+                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>" class="btn btn-primary">+1</a>
+                      <a href="command.php?as=decrease&item=<?php echo $post['id'];?>" class="btn btn-primary">-1</a>
                     </div>
                     <div class="card-footer text-muted">
                       Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
