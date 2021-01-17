@@ -8,16 +8,44 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
+$_SESSION["video"] = "";
 $search = $_SESSION["search"];
 $username = $_SESSION["username"];
-
+$comment = "";
 //Submit Button
 if (isset($_POST["submit"])){
   $_SESSION["search"] = trim($_POST["search"]);
   $search = $_SESSION["search"];
 }
-//Upload Button 
+//Comment Button 
+if(isset($_POST['comment'])) {
+  $addComment = trim($_POST['comment']);
 
+  if(!empty($comment)) {
+      $addCommentQuery = $db->prepare("
+          INSERT INTO comments(username, video, comment, date)
+          VALUES (:username, :video, :comment, NOW())
+      ");
+      $addCommentQuery->execute([
+          'comment' => $addComment,
+          'username' => $_SESSION['username'],
+          'video' => $_SESSION['video']
+          
+      ]);
+  }
+}
+
+//prepare all comments
+
+$commentQuery = $db->prepare("
+  SELECT *
+  FROM comments
+");
+
+$commentQuery->execute([
+]);
+
+$comments = $commentQuery->rowCount() ? $commentQuery : [];
 
 //prepare all posts
 $postQuery = $db->prepare("
@@ -129,6 +157,7 @@ $searchQuery = $db->prepare("
         </h1>
         <?php if($search==""): ?>
           <?php foreach($posts as $post): ?>
+            <?php $_SESSION["video"] = $post['video']; ?>
             <!-- Blog Post -->
             <div class="card mb-4">
               <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
@@ -139,7 +168,7 @@ $searchQuery = $db->prepare("
                 <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Comments</button>
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
+                  <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
@@ -148,13 +177,27 @@ $searchQuery = $db->prepare("
                         </button>
                       </div>
                       <div class="modal-body">
+                      <ul class="items">
+                      <?php foreach($comments as $comment): ?>
+
+                        <?php if($comment['video']==$post['id']): ?>
+                          <li>
+                            
+                            <span class="comment" ><?php echo $comment['comment']; ?></span>
+                            <div class="text-muted">
+                              <?php echo substr($post['date'],0,10); ?> - <?php echo $comment['username']; ?>
+                            </div>
+                          </li>
+                          <?php endif; ?>
+                      <?php endforeach; ?>
+                      </ul>
                       <form method="post">
-                      <input type="text" name="comment" class="form-control mt-3" placeholder="Add a Comment">
+                        <input type="text" name="comment" class="form-control mt-3" placeholder="Add a Comment">
+                        <input type="submit" value="Add" class="submit btn btn-primary mt-2" value="Add Comment">
                       </form>
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Add Comment</button>
                       </div>
                     </div>
                   </div>
@@ -205,7 +248,7 @@ $searchQuery = $db->prepare("
           <h5 class="card-header">Search</h5>
           <div class="card-body">
           <form method ="post">      
-              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for...">
+              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for..." autocomplete="off">
               <input type="submit" name="submit" class="btn btn-secondary mt-2" value="Go!">
             </form>
           </div>
@@ -237,13 +280,15 @@ $searchQuery = $db->prepare("
             <div class="form-group">
                   <input type='file' name='file' />
                   <form method="post">
-                <input type="text" name="title" class="form-control mt-3" placeholder="Title">
+                <input type="text" name="title" class="form-control mt-3" placeholder="Title" autocomplete="off" >
+                <input type='submit' href="command.php?as=n" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
+
                 </form>
-            <input type='submit' href="command.php?as=n" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
                 <?php
                     @$title = $_POST["title"];
 
                     if(isset($_POST['vid_upload'])){
+                      
                         $maxsize=262144000;//250 mb
                         if(isset($_FILES['file']['name']) && $_FILES['file']['name'] != '' && trim($title)!=''){
                             $name = $_FILES['file']['name'];
@@ -266,6 +311,8 @@ $searchQuery = $db->prepare("
                                     'title' => $title
                                     ]);
                                     $_SESSION['message']="Uploaded Successfully.";
+                                    $_SESSION["search"] = "";
+                                    $search = $_SESSION["search"];
                                 }
                             }
                         
