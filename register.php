@@ -15,6 +15,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 if(empty(trim($_POST['username']))){
     $username_error = "You did not enter a username. Please try again.";
 }
+
 else{
     $test_username = trim($_POST['username']);
     foreach ($db->query("SELECT username FROM users") as $row){
@@ -51,7 +52,7 @@ else{
         }
     }
     
-    if(!empty(trim($_POST['password'])) && strlen(trim($_POST['password'])) > 6 && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err) && trim($_POST['password'])==trim($_POST['confirm_password'])){
+    if(!empty(trim($_POST['password'])) && strlen(trim($_POST['password'])) >= 6 && !empty(trim($_POST['confirm_password'])) && empty($username_error) && empty($password_err) && empty($confirm_password_err) && trim($_POST['password'])==trim($_POST['confirm_password'])){
 
        // Prepare an insert statement
        $insert_statement = $db->prepare("
@@ -63,6 +64,8 @@ else{
             'username' => $username,
             'password' => $password
         ]);
+
+        header("location: main.php");
     } 
 }
 ?>
@@ -73,9 +76,24 @@ else{
     <meta charset="UTF-8">
     <title>Sign Up</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+    <img class="card-img-top" src="form.png" style="height: 90px; width: 293px; size:" alt="Card image cap">
     <style type="text/css">
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; margin-top:60px}
+        body{ font: 14px sans-serif;
+            justify-content: center;
+            background-image: url(coolbackground.jpg);
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            padding-top: 120px;
+        }
+        .wrapper{ width: 350px; padding: 20px; margin-top:30px;
+            outline-style: double;
+            background-color:azure;
+            }
+        .card-img-top{
+            justify-content: center;
+            margin-left: 817px;   
+        }
     </style>
 </head>
 <body>
@@ -101,7 +119,7 @@ else{
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
             </div>
-            <p>Already have an account? <a href="login.php">Login here</a>.</p>
+            <p>Already have an account? <a href="index.php">Login here</a>.</p>
         </form>
     </div>    
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

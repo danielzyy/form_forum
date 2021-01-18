@@ -5,9 +5,11 @@ session_start();
 require_once "init.php";
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.php");
+    header("location: index.php");
     exit;
 }
+
+$_SESSION["video"] = "";
 $search = $_SESSION["search"];
 $username = $_SESSION["username"];
 
@@ -16,8 +18,35 @@ if (isset($_POST["submit"])){
   $_SESSION["search"] = trim($_POST["search"]);
   $search = $_SESSION["search"];
 }
-//Upload Button 
 
+if(isset($_POST['comment'])) {
+  $addComment = trim($_POST['comment']);
+
+  if(!empty($addComment)) {
+      $addCommentQuery = $db->prepare("
+          INSERT INTO comments(username, video, comment, date)
+          VALUES (:username, :video, :comment, NOW())
+      ");
+      $addCommentQuery->execute([
+          'username' => $_SESSION["username"],
+          'video' => $_SESSION["video"],
+          'comment' => $addComment
+      ]);
+  }
+}
+
+//prepare all comments
+
+$commentQuery = $db->prepare("
+  SELECT *
+  FROM comments
+");
+
+$commentQuery->execute([
+  // 'video' => $_SESSION["video"]
+]);
+
+$comments = $commentQuery->rowCount() ? $commentQuery : [];
 
 //prepare all posts
 $postQuery = $db->prepare("
@@ -88,18 +117,16 @@ $searchQuery = $db->prepare("
   <title>Form Forum Home</title>
   <link rel="stylesheet" href="css/blog-home.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
-
-  <!-- Bootstrap core CSS -->
-  
+  <link rel="stylesheet" href="./css/main.css">
 
 </head>
 
 <body>
 
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: lightblue;">
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top" >
     <div class="container">
-      <img class="card-img-top" src="form.png" style="height: 50px; width: 170px;" alt="Card image cap">
+      <img class="card-img-top" src="form.png" style="height: 60px; width: 195px;" alt="Card image cap">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -125,18 +152,51 @@ $searchQuery = $db->prepare("
 
       <!-- Blog Entries Column -->
       <div class="col-md-8">
-        <h1 class="my-4">Welcome to Form Forum!
+        <h1 class="my-4">Welcome to the Form Forum!
         </h1>
         <?php if($search==""): ?>
-          <?php foreach($posts as $post): ?>
+            <?php foreach($posts as $post): ?>
             <!-- Blog Post -->
             <div class="card mb-4">
               <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
               <div class="card-body">
                 <h2 class="card-title"><?php echo $post['title']; ?></h2>
                 <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">+1</a>
+                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-danger">+1</a>
                 <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Comments</button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                      <ul class="items">
+                      <?php foreach($comments as $comment): ?>
+                          <li>
+                            <span class="comment" ><?php echo $comment['comment']; ?></span>
+                            <div class="text-muted">
+                              <?php echo substr($post['date'],0,10); ?> - <?php echo $comment['username']; ?>
+                            </div>
+                          </li>
+                      <?php endforeach; ?>
+                      </ul>
+
+                      <form class="form-group" method="post">
+                        <input type="text" name="comment" class="form-control" autocomplete="off" placeholder="Add a Comment" required ><br>
+                        <input type="submit" class="submit btn btn-primary" value="Add Comment">
+                      </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="card-footer text-muted">
                 Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
@@ -144,23 +204,57 @@ $searchQuery = $db->prepare("
             </div>
           <?php endforeach; ?>
 
+
             <?php else: ?>
               <?php if(!empty($searchs)): ?>
                 <?php foreach($searchs as $post): ?>
-                  <!-- Blog Post -->
-                  <div class="card mb-4">
-                    <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
-                    <div class="card-body">
-                      <h2 class="card-title"><?php echo $post['title']; ?></h2>
-                      <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
-                      <a href="command.php?as=increase&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">+1</a>
-                      <a href="command.php?as=decrease&item=<?php echo $post['id']; ?>&user=<?php echo $post['username']; ?>" class="btn btn-primary">-1</a>
-                    </div>
-                    <div class="card-footer text-muted">
-                      Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+                 <!-- Blog Post -->
+            <div class="card mb-4">
+              <video src= "<?php echo $post['video']; ?>" controls width='100%' height='300px'></video>
+              <div class="card-body">
+                <h2 class="card-title"><?php echo $post['title']; ?></h2>
+                <p class="card-title">Form Rating: <?php echo $post['score']; ?></p>
+                <a href="command.php?as=increase&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-danger">+1</a>
+                <a href="command.php?as=decrease&item=<?php echo $post['id']."&username=".$post['username']; ?>" class="btn btn-primary">-1</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Comments</button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Comments</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                      <ul class="items">
+                      <?php foreach($comments as $comment): ?>
+                          <li>
+                            <span class="comment" ><?php echo $comment['comment']; ?></span>
+                            <div class="text-muted">
+                              <?php echo substr($post['date'],0,10); ?> - <?php echo $comment['username']; ?>
+                            </div>
+                          </li>
+                      <?php endforeach; ?>
+                      </ul>
+
+                      <form class="form-group" method="post">
+                        <input type="text" name="comment" class="form-control" autocomplete="off" placeholder="Add a Comment" required ><br>
+                        <input type="submit" class="submit btn btn-primary" value="Add Comment">
+                      </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                      </div>
                     </div>
                   </div>
-                <?php endforeach; ?>
+                </div>
+              </div>
+              <div class="card-footer text-muted">
+                Posted on <?php echo substr($post['date'],0,10); ?> by <?php echo $post['username']; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
               <?php else: ?>
                 <?php echo "No videos found." ?>
               <?php endif; ?>
@@ -174,7 +268,6 @@ $searchQuery = $db->prepare("
             <a class="page-link" href="#">Newer &rarr;</a>
           </li>
         </ul>
-
       </div>
 
       <!-- Sidebar Widgets Column -->
@@ -184,7 +277,7 @@ $searchQuery = $db->prepare("
           <h5 class="card-header">Search</h5>
           <div class="card-body">
           <form method ="post">      
-              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for...">
+              <input type="text" name="search" class="form-control" style="padding-bottom=5px;" placeholder="Search for..." autocomplete="off">
               <input type="submit" name="submit" class="btn btn-secondary mt-2" value="Go!">
             </form>
           </div>
@@ -194,8 +287,7 @@ $searchQuery = $db->prepare("
         <div class="card my-4">
           <h5 class="card-header">Profile</h5>
           <div class="card-body">
-            <img class="card-img-top" src="http://placehold.it/180x180" alt="Card image cap" 
-            style="padding-bottom: 20px; border-radius:50%;">
+            <img class="card-img-top" src="img.png" alt="Card image cap" border-radius:50%;">
             <h1><?php echo $_SESSION["username"] ?></h1>
             <p>Account Form Rating: <?php echo $_SESSION["score"] ?></p>
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submit">Add Post</button>
@@ -217,7 +309,7 @@ $searchQuery = $db->prepare("
             <div class="form-group">
                   <input type='file' name='file' />
                   <form method="post">
-                <input type="text" name="title" class="form-control mt-3" placeholder="Title">
+                <input type="text" name="title" class="form-control mt-3" placeholder="Title" autocomplete="off">
                 </form>
             <input type='submit' href="command.php?as=n" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#submit" value='Upload' name='vid_upload'>
                 <?php
@@ -286,9 +378,9 @@ $searchQuery = $db->prepare("
   <!-- /.container -->
 
   <!-- Footer -->
-  <footer class="py-5 bg-dark">
+  <footer class="py-2 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Your Website 2020</p>
+      <p class="m-0 text-center text-white">HTN 2020++ <3</p>
     </div>
     <!-- /.container -->
   </footer>
